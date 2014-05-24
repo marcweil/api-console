@@ -94,7 +94,7 @@
       var client = RAML.Client.create(this.parsed, function(client) {
         client.baseUriParameters(pathBuilder.baseUriContext);
       });
-      url = response.requestUrl = client.baseUri + pathBuilder(pathBuilder.segmentContexts);
+      url = client.baseUri + pathBuilder(pathBuilder.segmentContexts);
     } catch (e) {
       this.setResponse(undefined);
       this.missingUriParameters = true;
@@ -109,6 +109,8 @@
     if (!RAML.Utils.isEmpty(this.context.queryParameters.data())) {
       request.queryParams(this.context.queryParameters.data());
     }
+
+    response.requestUrl = request.toOptions().url;
 
     if (!RAML.Utils.isEmpty(this.context.headers.data())) {
       request.headers(this.context.headers.data());
