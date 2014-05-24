@@ -37,6 +37,7 @@
 
     var contextKey = baseKey + ':context';
     var responseKey = baseKey + ':response';
+    var requestKey = baseKey + ':request';
 
     var context = new RAML.Controllers.TryIt.Context($scope.resource, $scope.method);
     var oldContext = DataStore.get(contextKey);
@@ -47,6 +48,7 @@
 
     this.context = $scope.context = context;
     this.response = DataStore.get(responseKey);
+    this.request = DataStore.get(requestKey);
 
     DataStore.set(contextKey, this.context);
 
@@ -65,6 +67,12 @@
       $scope.apiClient.response = response;
       return response;
     };
+
+    this.setRequest = function(request) {
+      DataStore.set(requestKey, request);
+      $scope.apiClient.request = request;
+      return request;
+    };
   };
 
   TryIt.prototype.inProgress = function() {
@@ -76,6 +84,7 @@
     this.disallowedAnonymousRequest = false;
 
     var response = this.setResponse({});
+    var displayableRequest = this.setRequest({});
 
     function handleResponse(jqXhr) {
       response.body = jqXhr.responseText,
@@ -110,8 +119,6 @@
       request.queryParams(this.context.queryParameters.data());
     }
 
-    response.requestUrl = request.toOptions().url;
-
     if (!RAML.Utils.isEmpty(this.context.headers.data())) {
       request.headers(this.context.headers.data());
     }
@@ -134,6 +141,10 @@
     } catch (e) {
       // custom strategies aren't supported yet.
     }
+
+    displayableRequest.requestUrl = request.toOptions().url;
+    displayableRequest.requestUrlUnescaped = decodeURIComponent(request.toOptions().url);
+    displayableRequest.headers = request.toOptions().headers;
 
     authStrategy.authenticate().then(function(token) {
       token.sign(request);
