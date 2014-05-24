@@ -146,7 +146,7 @@
     if (!!RAML.Settings.proxy) {
       displayableRequest.requestUrl = displayableRequest.requestUrl.substr(RAML.Settings.proxy.length);
     }
-    displayableRequest.requestUrlUnescaped = decodeURIComponent(request.toOptions().url);
+    displayableRequest.requestUrlUnescaped = decodeURIComponent(displayableRequest.requestUrl);
     displayableRequest.headers = request.toOptions().headers;
 
     authStrategy.authenticate().then(function(token) {
