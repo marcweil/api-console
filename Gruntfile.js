@@ -12,7 +12,7 @@ function mountFolder(connect, dir) {
 function stripFontPathPrefix(connect) {
   return function(req, res, next) {
     var pathname = connect.utils.parseUrl(req).pathname;
-    var fontPrefix = '/font';
+    var fontPrefix = '/fonts';
     if (pathname.slice(0, fontPrefix.length) === fontPrefix) {
       req.url = req.url.slice(fontPrefix.length);
     }
@@ -93,7 +93,7 @@ module.exports = function (grunt) {
               lrSnippet,
               mountFolder(connect, '.tmp'),
               // For dist, fonts are copied to dist/fonts/ and hosted at /fonts
-              // For dev, strip /font from path and host fonts at root
+              // For dev, strip /fonts from path and host fonts at root
               stripFontPathPrefix(connect),
               mountFolder(connect, 'app/vendor/bower_components/font-awesome/fonts'),
               mountFolder(connect, 'app/vendor/open-sans'),
