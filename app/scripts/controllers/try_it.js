@@ -143,6 +143,9 @@
     }
 
     displayableRequest.requestUrl = request.toOptions().url;
+    if (!!RAML.Settings.proxy) {
+      displayableRequest.requestUrl = displayableRequest.requestUrl.substr(RAML.Settings.proxy.length);
+    }
     displayableRequest.requestUrlUnescaped = decodeURIComponent(request.toOptions().url);
     displayableRequest.headers = request.toOptions().headers;
 
