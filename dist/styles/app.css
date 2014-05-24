@@ -4423,13 +4423,11 @@ raml-console article#raml-console .try-it form:after,
   clear: both;
 }
 raml-console article#raml-console .try-it .response,
-#raml-console-loader .try-it .response {
+#raml-console-loader .try-it .response,
+raml-console article#raml-console .try-it .request,
+#raml-console-loader .try-it .request {
   color: #333;
   padding: 0 25px 15px;
-}
-raml-console article#raml-console .try-it .response .response-value,
-#raml-console-loader .try-it .response .response-value {
-  font-family: monospace;
 }
 raml-console article#raml-console #raml-console-api-title,
 #raml-console-loader #raml-console-api-title {

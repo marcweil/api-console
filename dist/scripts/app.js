@@ -1533,6 +1533,7 @@ RAML.Inspector = (function() {
 
     var contextKey = baseKey + ':context';
     var responseKey = baseKey + ':response';
+    var requestKey = baseKey + ':request';
 
     var context = new RAML.Controllers.TryIt.Context($scope.resource, $scope.method);
     var oldContext = DataStore.get(contextKey);
@@ -1543,6 +1544,7 @@ RAML.Inspector = (function() {
 
     this.context = $scope.context = context;
     this.response = DataStore.get(responseKey);
+    this.request = DataStore.get(requestKey);
 
     DataStore.set(contextKey, this.context);
 
@@ -1561,6 +1563,12 @@ RAML.Inspector = (function() {
       $scope.apiClient.response = response;
       return response;
     };
+
+    this.setRequest = function(request) {
+      DataStore.set(requestKey, request);
+      $scope.apiClient.request = request;
+      return request;
+    };
   };
 
   TryIt.prototype.inProgress = function() {
@@ -1572,6 +1580,7 @@ RAML.Inspector = (function() {
     this.disallowedAnonymousRequest = false;
 
     var response = this.setResponse({});
+    var displayableRequest = this.setRequest({});
 
     function handleResponse(jqXhr) {
       response.body = jqXhr.responseText,
@@ -1590,7 +1599,7 @@ RAML.Inspector = (function() {
       var client = RAML.Client.create(this.parsed, function(client) {
         client.baseUriParameters(pathBuilder.baseUriContext);
       });
-      url = response.requestUrl = client.baseUri + pathBuilder(pathBuilder.segmentContexts);
+      url = client.baseUri + pathBuilder(pathBuilder.segmentContexts);
     } catch (e) {
       this.setResponse(undefined);
       this.missingUriParameters = true;
@@ -1628,6 +1637,10 @@ RAML.Inspector = (function() {
     } catch (e) {
       // custom strategies aren't supported yet.
     }
+
+    displayableRequest.requestUrl = request.toOptions().url;
+    displayableRequest.requestUrlUnescaped = decodeURIComponent(request.toOptions().url);
+    displayableRequest.headers = request.toOptions().headers;
 
     authStrategy.authenticate().then(function(token) {
       token.sign(request);
@@ -3865,13 +3878,29 @@ angular.module('ramlConsoleApp').run(['$templateCache', function($templateCache)
     "    </div>\n" +
     "  </form>\n" +
     "\n" +
+    "  <div class=\"request\" ng-if=\"apiClient.request\">\n" +
+    "    <h4>Request</h4>\n" +
+    "    <div class=\"request-url\">\n" +
+    "      <h5>URL (escaped)</h5>\n" +
+    "      <code class=\"request-value\">{{apiClient.request.requestUrl}}</code>\n" +
+    "      <h5>URL (unescaped)</h5>\n" +
+    "      <code class=\"request-value\">{{apiClient.request.requestUrlUnescaped}}</code>\n" +
+    "    </div>\n" +
+    "    <div class=\"request-headers\">\n" +
+    "      <h5>Headers</h5>\n" +
+    "      <ul class=\"request-value\">\n" +
+    "        <li ng-repeat=\"(header, value) in apiClient.request.headers\">\n" +
+    "          <code>\n" +
+    "            <span class=\"header-key\">{{header}}:</span>\n" +
+    "            <span class=\"header-value\">{{value[0]}}</span>\n" +
+    "          </code>\n" +
+    "        </li>\n" +
+    "      </ul>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "\n" +
     "  <div class=\"response\" ng-if=\"apiClient.response\">\n" +
     "    <h4>Response</h4>\n" +
-    "    <div class=\"request-url\">\n" +
-    "      <h5>Request URL</h5>\n" +
-    "      <code class=\"response-value\">{{apiClient.response.requestUrl}}</code>\n" +
-    "    </div>\n" +
-    "\n" +
     "    <div class=\"status\">\n" +
     "      <h5>Status</h5>\n" +
     "      <code class=\"response-value\">{{apiClient.response.status}}</code>\n" +
